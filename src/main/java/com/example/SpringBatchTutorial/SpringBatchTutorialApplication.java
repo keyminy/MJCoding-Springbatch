@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
-@EnableBatchProcessing
+@EnableBatchProcessing //Batch가 가능하게
 @SpringBootApplication
 public class SpringBatchTutorialApplication {
 

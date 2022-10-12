@@ -1,5 +1,6 @@
-package com.example.SpringBatchTutorial.job;
+package com.example.SpringBatchTutorial.job.ValidatedParam;
 
+import com.example.SpringBatchTutorial.job.ValidatedParam.Vallidator.FileParamValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -13,12 +14,17 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/*
+* desc : 파일 이름 파라미터 전달 그리고 검증
+* run : --spring.batch.job.names=validatedParamJob -fileName=test.csv
+* */
 @Configuration
 @RequiredArgsConstructor
-public class HelloWorldJobConfig {
+public class ValidatedParamJobConfig {
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -28,32 +34,33 @@ public class HelloWorldJobConfig {
 
     /* jobBuilderFactory,stepBuilderFactory 객체를 이용해, job과 step을 생성한다 */
     @Bean
-    public Job helloWorldJob(){
-        return jobBuilderFactory.get("helloWorldJob")
+    public Job validatedParamJob(Step validatedParamStep){
+        return jobBuilderFactory.get("validatedParamJob")
                 .incrementer(new RunIdIncrementer())
-                .start(helloWorldStep())
+                .validator(new FileParamValidator())
+                .start(validatedParamStep)
                 .build();
     }
 
-    @JobScope
     @Bean
-    public Step helloWorldStep(){
+    @JobScope
+    public Step validatedParamStep(Tasklet validatedParamTasklet){
         return stepBuilderFactory.get("helloWorldStep")
-                .tasklet(helloWorldTasklet())
+                /*step하위 영역,읽고 쓸것 없이 단순한 배치를 만들 땐 tasklet을 만듬 */
+                .tasklet(validatedParamTasklet)
                 .build();
     }
 
+    /* Tasklet 등록 */
     @Bean
     @StepScope //step하위에서 실행되므로
-    public Tasklet helloWorldTasklet(){
+    public Tasklet validatedParamTasklet(@Value("#{jobParameters['fileName']}") String fileName){
         return new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                System.out.println("Hello World Spring Batch");
-                return RepeatStatus.FINISHED;
+                System.out.println("validated Param Tasklet");
+                return RepeatStatus.FINISHED; //Step종료하기
             }
         };
     }
-
-
 }
