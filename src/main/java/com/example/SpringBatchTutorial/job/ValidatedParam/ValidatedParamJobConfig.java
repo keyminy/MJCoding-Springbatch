@@ -45,7 +45,7 @@ public class ValidatedParamJobConfig {
     @Bean
     @JobScope
     public Step validatedParamStep(Tasklet validatedParamTasklet){
-        return stepBuilderFactory.get("helloWorldStep")
+        return stepBuilderFactory.get("validatedParamStep")
                 /*step하위 영역,읽고 쓸것 없이 단순한 배치를 만들 땐 tasklet을 만듬 */
                 .tasklet(validatedParamTasklet)
                 .build();
