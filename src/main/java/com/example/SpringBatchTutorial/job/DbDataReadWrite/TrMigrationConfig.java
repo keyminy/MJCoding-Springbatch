@@ -87,11 +87,9 @@ public class TrMigrationConfig {
     @Bean
     public ItemWriter<Accounts> trOrdersWriter(){
     	return new ItemWriter<Accounts>() {
-
 			@Override
 			public void write(List<? extends Accounts> items) throws Exception {
 				items.forEach(item -> accountsRepository.save(item));
-				
 			}
 		};
     }
